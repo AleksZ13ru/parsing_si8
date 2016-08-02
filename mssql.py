@@ -1,9 +1,16 @@
 import datetime
 import pymssql
+import time
 
+'''
 server = '192.168.217.29:1433'
-user = 'pi'
+user = 'sa'
 password = '123456'
+database = 'owen_trm'
+'''
+server = '127.0.0.1:1433'
+user = 'sa'
+password = 'A123456a'
 database = 'owen_trm'
 
 
@@ -14,6 +21,23 @@ def insert(id_si8, regName, value, now_date=datetime.datetime.now()):
     cursor.execute("INSERT INTO si8_value (id_si8, regName, value, Date) VALUES ( %d, %s, %d, %s)",
                    (id_si8, regName, value, now_date))
     conn.commit()
+    conn.close()
+
+
+def insert_all(bufs):
+    conn = pymssql.connect(server=server, user=user, password=password, database=database, timeout=40)
+    cursor = conn.cursor()
+    for buf in bufs:
+        try:
+            id_si8 = buf['id_si8']
+            regName = 'DSPD'
+            value = buf['value']
+            now_date = buf['now_date']
+            cursor.execute("INSERT INTO si8_value (id_si8, regName, value, Date) VALUES ( %d, 'DSPD', %d, %s)", (id_si8,  value, now_date))
+            conn.commit()
+            #time.sleep(0.01)
+        except:
+            time.sleep(1)
     conn.close()
 
 
